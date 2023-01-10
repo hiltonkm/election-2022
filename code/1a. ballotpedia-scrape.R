@@ -58,6 +58,8 @@ senate_races <- fill(senate_races,new_line, .direction = "down") # creates a var
 senate_races <- senate_races %>%
   pivot_wider(id_cols=new_line, names_from = col, values_from=value) %>%
   select(-new_line)
+colnames(senate_races)
+colnames(senate_races) <- c("state", "incumbent", "seat_open", "winner", "flip", "margin")
 
 # US House 2022 ----------------------------------------------------------------
 # Using same process as above for house data
