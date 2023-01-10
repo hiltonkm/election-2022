@@ -170,7 +170,23 @@ senate <- senate %>%
   left_join(., states, by="STATE_NAME")
 
 senate <- relocate(senate,STATE_NAME, STATE, STUSAB, STATENS)
-
-## Note: still need to clean incumbent_electoral_history and status
 senate <- rename(senate, STATE_FIPS=STATE)
+
+senate$incumbent_electoral_history <-str_extract_all(senate$incumbent_electoral_history, "\\d{4}")
+senate <- senate %>%
+  rowwise() %>%
+  mutate(incumbent_electoral_history=paste(incumbent_electoral_history, collapse = "; "))
+
+# Status flags:
+## incumbent retired
+## incumbent re-elected
+## dem
+## rep
+
+senate$incumbent_retired <- ifelse(str_detect(senate$status, "retired"),1,0)
+senate$incumbent_re_elected <- ifelse(str_detect(senate$status, "re\\-elected"),1,0)
+senate$dem <- ifelse(senate$candidate_won == 1 & senate$candidate_party == "Democratic",1,0)
+senate$rep <- ifelse(senate$candidate_won == 1 & senate$candidate_party == "Republican",1,0)
+senate$status <- NULL
+
 googlesheets4::range_write(spreadsheet, senate, sheet="senate")
