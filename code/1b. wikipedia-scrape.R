@@ -160,7 +160,9 @@ senate$candidate_won <- ifelse(str_detect(senate$candidate_info,".Y "), 1,0)
 senate$candidate_info <- trimws(gsub(".Y ", "", senate$candidate_info))
 senate$candidate_party <- str_extract(str_extract(senate$candidate_info, "\\(.+\\)"),"\\w+")
 senate$candidate_margin <- str_extract(senate$candidate_info, "\\d+\\.?\\d+?")
-senate$candidate_name <- str_extract(senate$candidate_info, "\\w+ \\w+")
+senate$candidate_name <- str_extract(str_extract(senate$candidate_info, ".+\\("),
+                                      "\\w+[[:punct:]]? ?\\w+[[:punct:]]? ?\\w+[[:punct:]]? ?")
+
 senate <- senate %>%
   filter(!is.na(candidate_party)) %>%
   select(STATE_NAME=state, incumbent, incumbent_party, incumbent_electoral_history, status,
